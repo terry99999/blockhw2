@@ -42,7 +42,14 @@ def should_send():
     # specifically w.r.t. timing assumptions at the boundaries of the synchrony assumption
 
     # placeholder for (2.3)
-    return False
+    if is_started():
+        round_elapsed_time = time.time() - (start_time + get_curr_round() * round_length)
+        if round_elapsed_time > synchrony_assumption and round_elapsed_time < 2 * synchrony_assumption:
+            return True
+        else:
+            return False
+    else:
+        return False
 
 def receive_start_message():
     """ Called on receipt of a start message; starts tracking rounds and initializes
