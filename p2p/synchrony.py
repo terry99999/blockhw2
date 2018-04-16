@@ -1,5 +1,6 @@
 import time
 from blockchain.util import run_async
+import math
 
 #: The synchrony assumption (delta in the PDF) to use, in seconds
 synchrony_assumption = 2
@@ -24,9 +25,11 @@ def get_curr_round():
     """
     global start_time, round_length
     # Do not round intermediate arithmetic
-
-    # placeholder for (2.2)
-    return 0
+    if is_started():
+        rounds_elapsed = (time.time() - float(start_time))/round_length
+        return math.floor(rounds_elapsed)
+    else:
+        return None
 
 def should_send():
     """ Determine whether a node should be sending messages when queried.
@@ -47,7 +50,8 @@ def receive_start_message():
     """
     global start_time
 
-    # placeholder for (2.1)
+    start_time = time.time()
+    log_synchrony()
 
 @run_async
 def log_synchrony():
