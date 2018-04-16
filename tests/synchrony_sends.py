@@ -29,7 +29,7 @@ class SynchronySendsTest(unittest.TestCase):
     def test_synchrony_rounds(self):
         global example_parameters, expected_outputs
         # make sure start_time is initially none so function returns none
-        self.assertIsNone(synchrony.should_send())
+        self.assertFalse(synchrony.should_send())
         for test_index in range(len(example_parameters)):
             test_value = example_parameters[test_index]
             SynchronySendsTest.mock_values(test_value)
