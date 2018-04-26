@@ -57,7 +57,16 @@ class SimplePKIBA:
                 # proposal is new proposal that has just achieved threshold (m not in Sj)
                 # Pseudocode: then j adds m to its set Sj, signs m using its secret key skj, and multicasts...
 
-        return []
+        proposals = self.get_proposals_with_threshold(round)
+        broadcast = []
+        for proposal in proposals:
+            if proposal not in self.s_i:
+                broadcast.append(proposal)
+                self.s_i.append(proposal)
+                self.votes[proposal].add(config.node_id)
+                sig = util.sign_message(proposal, config.SECRET_KEYS[config.node_id])
+                self.signatures[proposal].append((config.node_id, sig))
+        return broadcast
 
     def get_proposals_with_threshold(self, round):
         """ Gets proposals that have reached the threshold required by a given round.
@@ -74,7 +83,12 @@ class SimplePKIBA:
         # Pseudocode: with signatures from r different players, including player s
 
         # placeholder for (3.2)
-        return []
+        proposals = []
+        sender = self.sender
+        for msg in self.votes.keys():
+            if len(self.votes[msg]) >= round and (sender in self.votes[msg]):
+                proposals.append(msg)
+        return proposals
 
     def broadcast_votes_for(self, round, votes):
         """ Broadcast votes on a proposal to all nodes; this happens once a proposal is added to s_i. """
@@ -119,7 +133,12 @@ class SimplePKIBA:
         # Pseudocode: (Output) Each player i outputs 0 if |Si| > 1 and otherwise outputs the unique element in Si.
 
         # placeholder for (3.3)
-        return []
+        if self.is_done() == True:
+            if len(self.s_i) == 1:
+                return self.s_i[0]
+            else:
+                return 0
+        return None
 
     @run_async
     def run_protocol_loop(self):
